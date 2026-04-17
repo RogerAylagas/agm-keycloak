@@ -113,10 +113,21 @@ mvn clean install
 
 ## Useful Build Commands
 
-### Build only the Quarkus distribution (faster)
+### Build only the Quarkus distribution (faster) ⭐ RECOMMENDED
 ```bash
-mvn clean install -pl quarkus/dist -DskipTests
+mvn clean install -DskipTests -q -pl quarkus/dist -am
 ```
+
+**What the flags mean:**
+- `-pl quarkus/dist` - Build only the Quarkus distribution module
+- `-am` - Also make (build dependencies needed for quarkus/dist)
+- This **skips JavaScript/UI build**, saving significant time
+- **Much faster** than full build: ~5-10 minutes vs 15-30 minutes
+
+**Use this when:**
+- You're building the server for Docker/Kubernetes
+- You don't need the Keycloak admin UI sources
+- You want a faster build during development
 
 ### Build with verbose output (for debugging)
 ```bash
