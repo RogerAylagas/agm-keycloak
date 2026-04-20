@@ -26,7 +26,7 @@ services:
       args:
         KC_VERSION: "26.1.4"
     image: agm-keycloak:dev
-    command: ["start", "--import-realm", "--optimized"]
+    command: ["start", "--optimized"]
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/${KC_DB_NAME:-keycloak}
