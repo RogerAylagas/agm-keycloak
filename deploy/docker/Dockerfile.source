@@ -1,0 +1,37 @@
+# Dockerfile.source — Phase 3 source build (dormant until custom code is added)
+#
+# This Dockerfile builds Keycloak from source when custom providers/themes are needed.
+# Switch to this when Phase 3 (code customizations) adds custom SPI providers.
+#
+# Usage: docker build -f Dockerfile.source -t agm-keycloak:custom .
+#
+# For now, use the official image in Dockerfile instead.
+
+# Build stage
+FROM registry.access.redhat.com/ubi9:latest AS builder
+
+RUN yum install -y java-21-openjdk-devel maven git && yum clean all
+
+WORKDIR /home/keycloak
+COPY . .
+
+RUN ./mvnw -pl quarkus/server -am -DskipTests clean install
+
+FROM registry.access.redhat.com/ubi9-micro:latest
+
+RUN groupadd keycloak && useradd -g keycloak keycloak
+
+WORKDIR /opt/keycloak
+
+COPY --from=builder /home/keycloak/quarkus/dist/target/keycloak-*.tar.gz .
+RUN tar xzf keycloak-*.tar.gz --strip-components=1 && rm *.tar.gz
+
+COPY realm-config/agm-realm.json /opt/keycloak/data/import/agm-realm.json
+
+RUN chown -R keycloak:keycloak /opt/keycloak
+
+USER keycloak
+
+EXPOSE 8080 8443 9000
+
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]

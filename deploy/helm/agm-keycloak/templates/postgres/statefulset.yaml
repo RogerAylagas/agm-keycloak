@@ -1,0 +1,85 @@
+{{- if .Values.database.postgresql.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "agm-keycloak.fullname" . }}-postgres
+  labels:
+    {{- include "agm-keycloak.labels" . }}
+    component: postgres
+spec:
+  serviceName: {{ include "agm-keycloak.fullname" . }}-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "agm-keycloak.selectorLabels" . }}
+      component: postgres
+  template:
+    metadata:
+      labels:
+        {{- include "agm-keycloak.selectorLabels" . }}
+        component: postgres
+    spec:
+      securityContext:
+        fsGroup: 999
+      containers:
+      - name: postgres
+        image: {{ include "agm-keycloak.postgres.image" . }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: postgres
+          containerPort: 5432
+          protocol: TCP
+        env:
+        - name: POSTGRES_DB
+          value: {{ .Values.database.name }}
+        - name: POSTGRES_USER
+          value: {{ .Values.database.user }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secrets.existingSecret | default (include "agm-keycloak.fullname" .) }}
+              key: {{ .Values.secrets.dbPasswordKey }}
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - pg_isready -U {{ .Values.database.user }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - pg_isready -U {{ .Values.database.user }}
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        resources:
+          {{- toYaml .Values.database.postgresql.resources | nindent 10 }}
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        securityContext:
+          runAsUser: 999
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      {{- if .Values.database.postgresql.storage.storageClass }}
+      storageClassName: {{ .Values.database.postgresql.storage.storageClass }}
+      {{- end }}
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: {{ .Values.database.postgresql.storage.size }}
+{{- end }}

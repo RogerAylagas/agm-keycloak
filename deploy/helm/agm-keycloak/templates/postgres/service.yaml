@@ -1,0 +1,19 @@
+{{- if .Values.database.postgresql.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "agm-keycloak.fullname" . }}-postgres
+  labels:
+    {{- include "agm-keycloak.labels" . }}
+    component: postgres
+spec:
+  clusterIP: None
+  selector:
+    {{- include "agm-keycloak.selectorLabels" . }}
+    component: postgres
+  ports:
+  - port: 5432
+    targetPort: postgres
+    protocol: TCP
+    name: postgres
+{{- end }}

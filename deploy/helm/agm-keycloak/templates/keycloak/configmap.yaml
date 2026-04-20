@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "agm-keycloak.fullname" . }}-config
+  labels:
+    {{- include "agm-keycloak.labels" . }}
+    component: keycloak
+data:
+  KC_DB: postgres
+  KC_HOSTNAME_STRICT: "false"
+  KC_HOSTNAME_STRICT_HTTPS: "false"
+  KC_HTTP_ENABLED: "{{ .Values.keycloak.http.enabled }}"
+  KC_PROXY_HEADERS: {{ .Values.keycloak.proxyHeaders }}
+  KC_FEATURES: {{ .Values.keycloak.features }}

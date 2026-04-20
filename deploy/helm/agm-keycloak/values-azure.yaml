@@ -1,0 +1,40 @@
+cloud:
+  provider: azure
+
+keycloak:
+  hostname: auth.example.com
+  replicas: 2
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "2000m"
+      memory: "4Gi"
+
+database:
+  provider: azuredb
+  host: ""
+  postgresql:
+    enabled: false
+
+ingress:
+  className: azure/application-gateway
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+
+nginx:
+  enabled: false
+
+secrets:
+  existingSecret: agm-keycloak-secrets
+
+serviceAccount:
+  annotations:
+    azure.workload.identity/client-id: ""
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilization: 70
