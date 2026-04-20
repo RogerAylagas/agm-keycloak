@@ -1,0 +1,90 @@
+global:
+  registry: ghcr.io
+  imageTag: "latest"
+
+cloud:
+  provider: local
+
+keycloak:
+  replicas: 1
+  image:
+    repository: ghcr.io/RogerAylagas/agm-keycloak
+    tag: ""
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "2000m"
+      memory: "2Gi"
+  hostname: ""
+  adminUser: admin
+  importRealm: true
+  realmConfigPath: /opt/keycloak/data/import
+  http:
+    enabled: true
+    port: 8080
+  https:
+    enabled: false
+    port: 8443
+  health:
+    port: 9000
+  proxyHeaders: xforwarded
+  features: "token-exchange,admin-fine-grained-authz"
+  extraEnv: {}
+
+database:
+  provider: local
+  host: ""
+  port: 5432
+  name: keycloak
+  user: keycloak
+  postgresql:
+    enabled: true
+    image: postgres:16-alpine
+    storage:
+      size: 10Gi
+      storageClass: ""
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+      limits:
+        cpu: "1000m"
+        memory: "512Mi"
+
+nginx:
+  enabled: true
+  replicas: 1
+  image:
+    repository: ghcr.io/RogerAylagas/agm-nginx
+    tag: ""
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+  tls:
+    enabled: false
+    secretName: ""
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  host: ""
+
+secrets:
+  existingSecret: ""
+  adminPasswordKey: admin-password
+  dbPasswordKey: db-password
+
+serviceAccount:
+  create: true
+  annotations: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilization: 80

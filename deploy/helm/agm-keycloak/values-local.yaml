@@ -1,0 +1,23 @@
+cloud:
+  provider: local
+
+keycloak:
+  hostname: keycloak.local
+  http:
+    enabled: true
+
+database:
+  provider: local
+  postgresql:
+    enabled: true
+    storage:
+      storageClass: standard
+
+ingress:
+  className: nginx
+  host: keycloak.local
+
+nginx:
+  enabled: true
+  tls:
+    enabled: false
