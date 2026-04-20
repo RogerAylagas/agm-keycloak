@@ -72,7 +72,10 @@ ingress:
   enabled: true
   className: nginx
   annotations: {}
-  host: ""
+  host: keycloak.local
+  tls:
+    enabled: false
+    secretName: ""
 
 secrets:
   existingSecret: ""
