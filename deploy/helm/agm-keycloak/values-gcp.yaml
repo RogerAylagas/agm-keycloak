@@ -1,0 +1,42 @@
+cloud:
+  provider: gcp
+
+keycloak:
+  hostname: auth.example.com
+  replicas: 2
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "2000m"
+      memory: "4Gi"
+
+database:
+  provider: cloudsql
+  host: ""
+  postgresql:
+    enabled: false
+
+ingress:
+  className: gce
+  annotations:
+    kubernetes.io/ingress.class: gce
+    kubernetes.io/ingress.global-static-ip-name: ""
+    networking.gke.io/managed-certificates: agm-managed-cert
+
+nginx:
+  enabled: false
+
+secrets:
+  existingSecret: agm-keycloak-secrets
+
+serviceAccount:
+  annotations:
+    iam.gke.io/gcp-service-account: ""
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilization: 70

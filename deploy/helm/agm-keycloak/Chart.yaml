@@ -1,0 +1,16 @@
+apiVersion: v2
+name: agm-keycloak
+description: AGM Keycloak Identity Service
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - keycloak
+  - identity
+  - iam
+home: https://github.com/RogerAylagas/agm-keycloak
+sources:
+  - https://github.com/RogerAylagas/agm-keycloak
+maintainers:
+  - name: AGM Team
+    email: claude.hexagram011@passmail.net
