@@ -14,7 +14,7 @@ FROM quay.io/keycloak/keycloak:${KC_VERSION}
 COPY --from=builder /opt/keycloak/lib /opt/keycloak/lib
 COPY --from=builder /opt/keycloak/providers /opt/keycloak/providers
 
-COPY realm-config/agm-realm.json /opt/keycloak/data/import/agm-realm.json
+RUN mkdir -p /opt/keycloak/data/import
 
 USER 1000
 
